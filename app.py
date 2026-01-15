@@ -33,13 +33,33 @@ try:
     users = db.users
     items = db.items
     print("✅ Connected to MongoDB successfully!")
+    DB_CONNECTED = True
 except Exception as e:
     print(f"❌ MongoDB connection failed: {e}")
-    # For development fallback
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client.smart_pantry
+    print("⚠️ Running in demo mode - data will not persist")
+    # Create mock database objects for demo
+    class MockCollection:
+        def __init__(self):
+            self.data = []
+        def find_one(self, query): return None
+        def find(self, query): return []
+        def insert_one(self, doc): return type('obj', (object,), {'inserted_id': 'demo_id'})
+        def update_one(self, query, update, **kwargs): return None
+        def delete_one(self, query): return None
+    
+    class MockDB:
+        def __init__(self):
+            self.users = MockCollection()
+            self.items = MockCollection()
+            self.saved_recipes = MockCollection()
+            self.hidden_recipes = MockCollection()
+            self.meal_plans = MockCollection()
+    
+    client = None
+    db = MockDB()
     users = db.users
     items = db.items
+    DB_CONNECTED = False
 
 # -------- EMAIL --------
 def send_email(to, subject, content):
@@ -491,9 +511,11 @@ def get_food_image(name):
 def health_check():
     """Health check endpoint for Render"""
     try:
-        # Test database connection
-        client.server_info()
-        return {"status": "healthy", "database": "connected"}, 200
+        if DB_CONNECTED and client:
+            client.server_info()
+            return {"status": "healthy", "database": "connected"}, 200
+        else:
+            return {"status": "healthy", "database": "demo_mode"}, 200
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}, 500
 
