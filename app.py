@@ -675,6 +675,9 @@ def pantry():
     if "user" not in session:
         return redirect("/login")
 
+    # Show database connection status
+    db_status = "Connected to MongoDB" if DB_CONNECTED else "Demo Mode - Set up MongoDB Atlas for full functionality"
+    
     today = datetime.today().date()
     user_items = list(items.find({"user": session["user"]}))
 
@@ -683,51 +686,103 @@ def pantry():
     expired_items = []
 
     for i in user_items:
-        expiry = datetime.strptime(i["expiry"], "%Y-%m-%d").date()
-        days_left = (expiry - today).days
+        try:
+            expiry = datetime.strptime(i["expiry"], "%Y-%m-%d").date()
+            days_left = (expiry - today).days
 
-        if "image" not in i:
-            i["image"] = get_food_image(i["name"])
-            items.update_one({"_id": i["_id"]}, {"$set":{"image":i["image"]}})
+            if "image" not in i:
+                i["image"] = get_food_image(i["name"])
+                if DB_CONNECTED:
+                    items.update_one({"_id": i["_id"]}, {"$set":{"image":i["image"]}})
 
-        i["_id"] = str(i["_id"])
-        i["days_left"] = days_left
-        
-        # Add default quantity and unit if not present (for existing items)
-        if "quantity" not in i:
-            i["quantity"] = 1
-        if "unit" not in i:
-            i["unit"] = "pieces"
+            i["_id"] = str(i["_id"])
+            i["days_left"] = days_left
+            
+            # Add default quantity and unit if not present (for existing items)
+            if "quantity" not in i:
+                i["quantity"] = 1
+            if "unit" not in i:
+                i["unit"] = "pieces"
 
-        if days_left < 0:
-            # Add to expired items list
-            stats["expired"] += 1
-            expired_items.append(i)
-        else:
-            # Add to current items
-            stats["total"] += 1
-            stats["soon" if days_left <= 3 else "safe"] += 1
-            updated.append(i)
+            if days_left < 0:
+                # Add to expired items list
+                stats["expired"] += 1
+                expired_items.append(i)
+            else:
+                # Add to current items
+                stats["total"] += 1
+                stats["soon" if days_left <= 3 else "safe"] += 1
+                updated.append(i)
+        except Exception as e:
+            print(f"Error processing item {i.get('name', 'unknown')}: {e}")
+            continue
 
-    return render_template("pantry.html", items=updated, expired_items=expired_items, stats=stats)
+    return render_template("pantry.html", 
+                         items=updated, 
+                         expired_items=expired_items, 
+                         stats=stats,
+                         db_status=db_status,
+                         db_connected=DB_CONNECTED)
 
 @app.route("/add", methods=["POST"])
 def add():
-    items.insert_one({
-        "user": session["user"],
-        "name": request.form["name"],
-        "category": request.form["category"],
-        "quantity": int(request.form["quantity"]),
-        "unit": request.form["unit"],
-        "expiry": request.form["expiry"],
-        "image": get_food_image(request.form["name"]),
-        "added_at": datetime.now()
-    })
+    if "user" not in session:
+        return redirect("/login")
+    
+    try:
+        # Get form data
+        name = request.form.get("name", "").strip()
+        category = request.form.get("category", "")
+        quantity = request.form.get("quantity", "1")
+        unit = request.form.get("unit", "")
+        expiry = request.form.get("expiry", "")
+        
+        # Validate required fields
+        if not all([name, category, quantity, unit, expiry]):
+            return redirect("/pantry?error=Please fill all fields")
+        
+        # Create item document
+        item_doc = {
+            "user": session["user"],
+            "name": name,
+            "category": category,
+            "quantity": int(quantity),
+            "unit": unit,
+            "expiry": expiry,
+            "image": get_food_image(name),
+            "added_at": datetime.now()
+        }
+        
+        # Insert into database
+        result = items.insert_one(item_doc)
+        print(f"✅ Added item: {name} for user: {session['user']}")
+        
+    except Exception as e:
+        print(f"❌ Error adding item: {e}")
+        return redirect("/pantry?error=Failed to add item")
+    
     return redirect("/pantry")
 
 @app.route("/delete/<id>")
 def delete(id):
-    items.delete_one({"_id": ObjectId(id)})
+    if "user" not in session:
+        return redirect("/login")
+    
+    try:
+        # Delete item by ID and ensure it belongs to the current user
+        result = items.delete_one({
+            "_id": ObjectId(id),
+            "user": session["user"]
+        })
+        
+        if result.deleted_count > 0:
+            print(f"✅ Deleted item: {id} for user: {session['user']}")
+        else:
+            print(f"⚠️ Item not found or doesn't belong to user: {id}")
+            
+    except Exception as e:
+        print(f"❌ Error deleting item: {e}")
+    
     return redirect("/pantry")
 
 @app.route("/clear_expired")

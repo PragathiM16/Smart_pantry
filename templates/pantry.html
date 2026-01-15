@@ -417,7 +417,14 @@ body{
 <!-- HEADER -->
 <div class="header">
   <h1>Your Pantry Overview</h1>
-  <button class="chart-btn" onclick="openChart()">View Analytics</button>
+  <div>
+    {% if not db_connected %}
+    <div style="background: #fff3cd; color: #856404; padding: 12px 20px; border-radius: 12px; margin-bottom: 10px; font-size: 14px; font-weight: 600;">
+      ⚠️ Demo Mode: <a href="https://dashboard.render.com" target="_blank" style="color: #986533;">Set up MongoDB Atlas</a> for full functionality
+    </div>
+    {% endif %}
+    <button class="chart-btn" onclick="openChart()">View Analytics</button>
+  </div>
 </div>
 
 <!-- STATS -->
