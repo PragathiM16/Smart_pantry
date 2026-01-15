@@ -25,17 +25,34 @@ PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY", "53925676-923ada41045b5b093107c78
 FLASK_ENV = os.getenv("FLASK_ENV", "development")
 
 # -------- DB --------
+print(f"🔍 Attempting to connect to MongoDB...")
+print(f"📋 MONGO_URI: {MONGO_URI[:50]}..." if len(MONGO_URI) > 50 else f"📋 MONGO_URI: {MONGO_URI}")
+
 try:
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
     # Test the connection
     client.server_info()
     db = client.smart_pantry
     users = db.users
     items = db.items
     print("✅ Connected to MongoDB successfully!")
+    print(f"📊 Database: {db.name}")
     DB_CONNECTED = True
 except Exception as e:
     print(f"❌ MongoDB connection failed: {e}")
+    print(f"🔍 Error type: {type(e).__name__}")
+    
+    # Provide specific troubleshooting based on error type
+    error_str = str(e).lower()
+    if "authentication failed" in error_str:
+        print("🔧 AUTHENTICATION ERROR: Check username/password in connection string")
+    elif "network" in error_str or "timeout" in error_str:
+        print("🔧 NETWORK ERROR: Check Network Access settings in MongoDB Atlas")
+    elif "dns" in error_str:
+        print("🔧 DNS ERROR: Check connection string format and cluster address")
+    elif "localhost" in MONGO_URI:
+        print("🔧 LOCALHOST ERROR: Update MONGO_URI environment variable in Render")
+    
     print("⚠️ Running in demo mode - data will not persist")
     # Create enhanced mock database objects for demo
     class MockCollection:
@@ -565,6 +582,53 @@ def get_food_image(name):
     return f"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop&crop=center"
 
 # -------- ROUTES --------
+@app.route("/debug/connection")
+def debug_connection():
+    """Debug endpoint to check MongoDB connection status"""
+    debug_info = {
+        "mongo_uri_set": "MONGO_URI" in os.environ,
+        "mongo_uri_preview": MONGO_URI[:50] + "..." if len(MONGO_URI) > 50 else MONGO_URI,
+        "db_connected": DB_CONNECTED,
+        "flask_env": FLASK_ENV
+    }
+    
+    connection_test = "❌ Failed"
+    error_message = "No error"
+    
+    if DB_CONNECTED:
+        connection_test = "✅ Success"
+        try:
+            # Test a simple operation
+            test_count = users.count_documents({})
+            debug_info["user_count"] = test_count
+        except Exception as e:
+            error_message = str(e)
+    else:
+        error_message = "Database not connected - check environment variables"
+    
+    debug_info["connection_test"] = connection_test
+    debug_info["error_message"] = error_message
+    
+    return f"""
+    <html>
+    <head><title>MongoDB Connection Debug</title></head>
+    <body style="font-family: monospace; padding: 20px;">
+        <h2>🔍 MongoDB Connection Debug</h2>
+        <pre>{chr(10).join([f"{k}: {v}" for k, v in debug_info.items()])}</pre>
+        
+        <h3>📋 Troubleshooting Steps:</h3>
+        <ol>
+            <li>Check if MONGO_URI is set in Render environment variables</li>
+            <li>Verify connection string format: mongodb+srv://...</li>
+            <li>Check Network Access in MongoDB Atlas (allow 0.0.0.0/0)</li>
+            <li>Verify database user credentials</li>
+        </ol>
+        
+        <p><a href="/pantry">← Back to Pantry</a></p>
+    </body>
+    </html>
+    """
+
 @app.route("/health")
 def health_check():
     """Health check endpoint for Render"""
