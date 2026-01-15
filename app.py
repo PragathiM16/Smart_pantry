@@ -119,6 +119,10 @@ def send_email(to, subject, content):
 
 def send_welcome_email(email, username):
     """Send welcome email to new users"""
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
+        print(f"📧 Email notifications disabled - Welcome email skipped for {username}")
+        return True
+    
     subject = "Welcome to Smart Pantry! 🥗"
     content = f"""
     <html>
@@ -143,13 +147,6 @@ def send_welcome_email(email, username):
                 <li>♻️ Reduce food waste and save money</li>
             </ul>
             
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="http://127.0.0.1:5000/pantry" 
-                   style="background: #986533; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                   Start Managing Your Pantry
-                </a>
-            </div>
-            
             <p style="font-size: 14px; color: #666; text-align: center;">
                 Happy cooking!<br>
                 The Smart Pantry Team
@@ -164,6 +161,10 @@ def send_expiry_notification(email, username, expiring_items):
     """Send expiry notification email"""
     if not expiring_items:
         return
+    
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
+        print(f"📧 Email notifications disabled - Expiry notification skipped for {username}")
+        return True
     
     subject = f"⚠️ {len(expiring_items)} items expiring soon in your pantry"
     
@@ -208,17 +209,6 @@ def send_expiry_notification(email, username, expiring_items):
                     <li>Consider preserving or freezing if possible</li>
                     <li>Share with friends or neighbors</li>
                 </ul>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="http://127.0.0.1:5000/pantry" 
-                   style="background: #986533; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                   View Your Pantry
-                </a>
-                <a href="http://127.0.0.1:5000/recipes/all" 
-                   style="background: #27ae60; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-left: 10px;">
-                   Find Recipes
-                </a>
             </div>
             
             <p style="font-size: 14px; color: #666; text-align: center;">
@@ -269,8 +259,8 @@ def check_expiring_items():
         
         # Send notification if there are expiring items
         if expiring_items:
-            print(f"Sending expiry notification to {email} for {len(expiring_items)} items")
-            send_expiry_notification(email, username, expiring_items)
+            print(f"📧 Email notifications disabled - Expiry notification skipped for {username} ({len(expiring_items)} items)")
+            # send_expiry_notification(email, username, expiring_items)  # Commented out to prevent errors
 
 def start_scheduler():
     """Start the background scheduler for daily email notifications"""
@@ -691,10 +681,11 @@ def signup():
             # Send welcome email immediately in a separate thread
             def send_welcome_async():
                 try:
-                    send_welcome_email(email, username)
-                    print(f"Welcome email sent successfully to {email}")
+                    result = send_welcome_email(email, username)
+                    if result:
+                        print(f"📧 Welcome email process completed for {email}")
                 except Exception as e:
-                    print(f"Failed to send welcome email to {email}: {e}")
+                    print(f"📧 Welcome email process failed for {email}: {e}")
             
             # Start email sending in background
             email_thread = threading.Thread(target=send_welcome_async)
@@ -1100,6 +1091,9 @@ def test_expiry_email():
     """Test endpoint to manually trigger expiry email check (for development)"""
     if "user" not in session:
         return redirect("/login")
+    
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
+        return "📧 Email notifications are disabled. To enable emails, set up SendGrid API key in environment variables."
     
     check_expiring_items()
     return "Expiry email check triggered! Check your email if you have items expiring in 3 days or less."
