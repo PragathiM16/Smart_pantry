@@ -3,85 +3,351 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welcome to Smart Pantry</title>
+<title>Smart Pantry - Welcome</title>
 
 <style>
-  body {
-    font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #f6f1eb 0%, #e8dcc6 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23986533" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%237a3e2f" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%23986533" opacity="0.15"/><circle cx="10" cy="60" r="0.5" fill="%237a3e2f" opacity="0.15"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 800px;
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4rem 3rem;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo-section {
+  margin-bottom: 2rem;
+}
+
+.logo {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.brand-name {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7a3e2f, #986533);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  letter-spacing: -2px;
+}
+
+.tagline {
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.cta-section {
+  margin-bottom: 3rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #986533, #7a3e2f);
+  color: white;
+  box-shadow: 0 8px 25px rgba(152, 101, 51, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(152, 101, 51, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(241, 231, 220, 0.8);
+  color: #7a3e2f;
+  border: 2px solid #986533;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: #986533;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(152, 101, 51, 0.3);
+}
+
+/* Features Grid */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.feature {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  border: 1px solid rgba(152, 101, 51, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #986533, #7a3e2f);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.feature:hover::before {
+  transform: scaleX(1);
+}
+
+.feature:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.feature:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.feature h3 {
+  color: #7a3e2f;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.feature p {
+  color: #666;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Decorative Elements */
+.decoration {
+  position: absolute;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.decoration-1 {
+  top: 10%;
+  left: 5%;
+  font-size: 8rem;
+  color: #986533;
+  animation: rotate 20s linear infinite;
+}
+
+.decoration-2 {
+  bottom: 15%;
+  right: 8%;
+  font-size: 6rem;
+  color: #7a3e2f;
+  animation: rotate 15s linear infinite reverse;
+}
+
+.decoration-3 {
+  top: 60%;
+  left: 2%;
+  font-size: 4rem;
+  color: #986533;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 3rem 2rem;
+    margin: 1rem;
+  }
+  
+  .brand-name {
+    font-size: 2.5rem;
+  }
+  
+  .logo {
+    font-size: 4rem;
+  }
+  
+  .tagline {
+    font-size: 1.1rem;
+  }
+  
+  .cta-buttons {
     flex-direction: column;
-    text-align: center;
-    color: #ffffff;
-    background: url('/static/welcome.png') no-repeat center center fixed;
-    background-size: cover;
-    overflow: hidden;
+    align-items: center;
   }
+  
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .decoration {
+    display: none;
+  }
+}
 
-  /* Dark overlay */
-  body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 0;
+@media (max-width: 480px) {
+  .hero-content {
+    padding: 2rem 1.5rem;
   }
-
-  h1, p, a.button {
-    position: relative;
-    z-index: 1;
+  
+  .brand-name {
+    font-size: 2rem;
   }
-
-  h1 {
-    font-size: 56px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin-bottom: 18px;
-    color: #ffffff;
-    text-transform: uppercase;
-    text-shadow:
-      0 4px 15px rgba(0,0,0,0.8),
-      0 0 25px rgba(255,255,255,0.15);
+  
+  .logo {
+    font-size: 3rem;
   }
-
-  p {
-    font-size: 22px;
-    font-weight: 300;
-    margin-bottom: 45px;
-    color: #ffffff;
-    opacity: 0.95;
-    letter-spacing: 0.5px;
-  }
-
-  a.button {
-    background-color: #ffffff;
-    color: #27ae60;
-    padding: 16px 38px;
-    border-radius: 10px;
-    font-weight: 700;
-    text-decoration: none;
-    font-size: 18px;
-    letter-spacing: 1px;
-    transition: all 0.25s ease;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  }
-
-  a.button:hover {
-    background-color: #f1f1f1;
-    transform: translateY(-4px);
-    box-shadow: 0 14px 35px rgba(0,0,0,0.5);
-  }
+}
 </style>
 </head>
 
 <body>
-  <h1>Welcome to Smart Pantry</h1>
-  <a class="button" href="/index">Sign In</a>
+
+<!-- Decorative Elements -->
+<div class="decoration decoration-1">🥕</div>
+<div class="decoration decoration-2">🍅</div>
+<div class="decoration decoration-3">🥬</div>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="logo-section">
+      <div class="logo">🥗</div>
+      <h1 class="brand-name">Smart Pantry</h1>
+      <p class="tagline">Transform your kitchen into an intelligent food management system. Track inventory, discover recipes, and reduce waste with AI-powered insights.</p>
+    </div>
+    
+    <div class="cta-section">
+      <div class="cta-buttons">
+        <a href="/signup" class="btn btn-primary">Start Your Journey</a>
+        <a href="/login" class="btn btn-secondary">Welcome Back</a>
+      </div>
+    </div>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Smart Analytics</h3>
+        <p>Get intelligent insights about your food consumption patterns and expiry predictions</p>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🍳</div>
+        <h3>Recipe Discovery</h3>
+        <p>Discover personalized recipes based on ingredients you already have in your pantry</p>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <h3>Meal Planning</h3>
+        <p>Plan your weekly meals efficiently and make the most of your ingredients</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

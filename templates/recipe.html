@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Recipes | Smart Pantry</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background: linear-gradient(135deg, rgba(246, 241, 235, 0.85), rgba(232, 220, 198, 0.85)), 
+              url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat fixed;
+  position: relative;
+}
+.nav{
+  padding:20px 40px;
+  background:rgba(255, 250, 244, 0.95);
+  backdrop-filter: blur(10px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  position: relative;
+  z-index: 100;
+}
+.nav a{
+  margin-left:20px;
+  text-decoration:none;
+  font-weight:600;
+  color:#7a3e2f;
+  transition:color 0.3s;
+}
+.nav a:hover{
+  color:#986533;
+}
+.page{
+  padding:40px;
+  position: relative;
+  z-index: 10;
+}
+.recipe-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:25px;
+  margin-bottom:30px;
+}
+.card{
+  background:white;
+  border-radius:22px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  overflow:hidden;
+  transition:transform 0.3s, box-shadow 0.3s;
+}
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 15px 35px rgba(0,0,0,.12);
+}
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  transition: opacity 0.3s ease;
+}
+.card img[data-loading="true"] {
+  opacity: 0.7;
+}
+.recipe-info{
+  padding:20px;
+}
+.recipe-info h3{
+  margin:0 0 12px 0;
+  color:#7a3e2f;
+  font-size:18px;
+}
+.recipe-meta{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.recipe-type{
+  background:#f1e7dc;
+  color:#7a3e2f;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+}
+.recipe-time{
+  background:#e8f5e8;
+  color:#2d5a2d;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+}
+.recipe-difficulty{
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+}
+.difficulty-easy{
+  background:#e8f5e8;
+  color:#2d5a2d;
+}
+.difficulty-medium{
+  background:#fff3cd;
+  color:#856404;
+}
+.difficulty-hard{
+  background:#f8d7da;
+  color:#721c24;
+}
+.recipe-info p{
+  font-size:14px;
+  color:#666;
+  margin:0 0 15px 0;
+  line-height:1.5;
+}
+.recipe-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:15px;
+}
+.btn-save{
+  background:#27ae60;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+.btn-save:hover{
+  background:#219a52;
+}
+.btn-hide{
+  background:#f39c12;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background 0.3s;
+  margin-left:5px;
+}
+.btn-hide:hover{
+  background:#e67e22;
+}
+.btn-remove{
+  background:#e74c3c;
+  color:white;
+  text-decoration:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+  transition:background 0.3s;
+}
+.btn-remove:hover{
+  background:#c0392b;
+}
+.saved-date{
+  font-size:11px;
+  color:#999;
+  font-style:italic;
+}
+.no-recipes{
+  text-align:center;
+  padding:60px 20px;
+  background:white;
+  border-radius:22px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+.no-recipes-icon{
+  font-size:60px;
+  margin-bottom:20px;
+}
+.no-recipes h3{
+  color:#7a3e2f;
+  margin-bottom:15px;
+}
+.no-recipes p{
+  color:#666;
+  margin-bottom:30px;
+  font-size:16px;
+}
+.btn-back{
+  display:inline-block;
+  padding:12px 24px;
+  background:#986533;
+  color:white;
+  text-decoration:none;
+  border-radius:12px;
+  font-weight:600;
+  transition:background 0.3s;
+}
+.btn-back:hover{
+  background:#7a3e2f;
+}
+.image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #f1e7dc, #986533);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}
+.back{
+  margin-top:30px;
+}
+.back a{
+  text-decoration:none;
+  font-weight:600;
+  color:#7a3e2f;
+  transition:color 0.3s;
+}
+.back a:hover{
+  color:#986533;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="nav">
+  <b>🥗 Smart Pantry</b>
+  <div>
+    <a href="/pantry">Pantry</a>
+    <a href="/recipes/all">All Recipes</a>
+    <a href="/recipes/saved">Saved Recipes</a>
+    <a href="/planner">Meal Planner</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<div class="page">
+
+<h2>🍳 Recipes{% if item %} using {{item}}{% endif %}</h2>
+
+{% if recipes %}
+<div class="recipe-grid">
+  {% for r in recipes %}
+  <div class="card">
+    <img src="{{ r.image }}" 
+         alt="{{ r.name }}" 
+         onerror="handleImageError(this, '{{ r.name }}')"
+         loading="lazy">
+    <div class="recipe-info">
+      <h3>{{ r.name }}</h3>
+      <div class="recipe-meta">
+        <span class="recipe-type">{{ r.type }}</span>
+        <span class="recipe-time">⏱ {{ r.time }}</span>
+        <span class="recipe-difficulty difficulty-{{ r.difficulty.lower() }}">{{ r.difficulty }}</span>
+      </div>
+      <p>{{ r.description }}</p>
+      
+      <!-- Recipe Actions -->
+      <div class="recipe-actions">
+        {% if r.id %}
+          <!-- For saved recipes - show remove option -->
+          <a href="/recipes/remove/{{ r.id }}" class="btn-remove" onclick="return confirm('Remove this recipe from saved?')">
+            🗑️ Remove
+          </a>
+          <span class="saved-date">Saved on {{ r.saved_at }}</span>
+        {% else %}
+          <!-- For new recipes - show save and remove options -->
+          <form method="POST" action="/recipes/save" style="display:inline;">
+            <input type="hidden" name="recipe_name" value="{{ r.name }}">
+            <input type="hidden" name="recipe_type" value="{{ r.type }}">
+            <input type="hidden" name="recipe_time" value="{{ r.time }}">
+            <input type="hidden" name="recipe_difficulty" value="{{ r.difficulty }}">
+            <input type="hidden" name="recipe_image" value="{{ r.image }}">
+            <input type="hidden" name="recipe_description" value="{{ r.description }}">
+            <input type="hidden" name="ingredient" value="{{ r.ingredient }}">
+            <button type="submit" class="btn-save">💾 Save Recipe</button>
+          </form>
+          <form method="POST" action="/recipes/hide" style="display:inline;">
+            <input type="hidden" name="recipe_name" value="{{ r.name }}">
+            <input type="hidden" name="ingredient" value="{{ r.ingredient }}">
+            <button type="submit" class="btn-hide" onclick="return confirm('Hide this recipe from suggestions?')">
+              ❌ Hide Recipe
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="no-recipes">
+  <div class="no-recipes-icon">🍽️</div>
+  <h3>No recipes selected</h3>
+  <p>Go back to your pantry and click on any food item to discover delicious recipes!</p>
+  <a href="/pantry" class="btn-back">← Back to Pantry</a>
+</div>
+{% endif %}
+
+<div class="back">
+  <a href="/pantry">← Back to Pantry</a>
+</div>
+
+</div>
+<script>
+function handleImageError(img, recipeName) {
+  // Try different fallback images
+  if (!img.dataset.fallbackAttempt) {
+    img.dataset.fallbackAttempt = '1';
+    img.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop`;
+  } else if (img.dataset.fallbackAttempt === '1') {
+    img.dataset.fallbackAttempt = '2';
+    img.src = '/static/recipe-placeholder.svg';
+  } else {
+    // Final fallback - create a colored div
+    img.style.display = 'none';
+    const placeholder = document.createElement('div');
+    placeholder.className = 'image-placeholder';
+    placeholder.textContent = recipeName;
+    img.parentNode.insertBefore(placeholder, img);
+  }
+}
+
+// Add loading states
+document.addEventListener('DOMContentLoaded', function() {
+  const images = document.querySelectorAll('img');
+  images.forEach(img => {
+    img.addEventListener('load', function() {
+      this.style.opacity = '1';
+    });
+    img.addEventListener('error', function() {
+      console.log('Image failed to load:', this.src);
+    });
+  });
+});
+</script>
+
+</body>
+</html>

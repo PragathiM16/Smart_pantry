@@ -1,0 +1,6 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="400" height="300" fill="#f1e7dc"/>
+<circle cx="200" cy="120" r="40" fill="#7a3e2f"/>
+<circle cx="200" cy="200" r="60" fill="#986533"/>
+<text x="200" y="260" font-family="Arial, sans-serif" font-size="18" fill="#7a3e2f" text-anchor="middle">Food Item</text>
+</svg>

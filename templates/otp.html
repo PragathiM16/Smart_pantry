@@ -1,16 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTP Verification - Smart Pantry</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background: linear-gradient(135deg, rgba(152, 101, 51, 0.8), rgba(122, 62, 47, 0.8)), 
+              url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat fixed;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position: relative;
+}
+
+.container{
+  background:white;
+  padding:50px 40px;
+  border-radius:24px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
+  width:100%;
+  max-width:400px;
+  position: relative;
+  z-index: 10;
+}
+
+.logo{
+  text-align:center;
+  font-size:60px;
+  margin-bottom:20px;
+}
+
+h1{
+  text-align:center;
+  color:#7a3e2f;
+  margin-bottom:30px;
+  font-size:24px;
+  font-weight:600;
+}
+
+.form-group{
+  margin-bottom:20px;
+}
+
+label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+  color:#333;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:2px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  box-sizing:border-box;
+  transition: border-color 0.3s;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+input:focus{
+  outline:none;
+  border-color:#986533;
+}
+
+.btn{
+  width:100%;
+  padding:16px;
+  background:#986533;
+  color:white;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:20px;
+  transition: background 0.3s;
+}
+
+.btn:hover{
+  background:#7a3e2f;
+}
+
+.links{
+  text-align:center;
+  margin-top:30px;
+}
+
+.links a{
+  color:#986533;
+  text-decoration:none;
+  font-weight:600;
+  transition: color 0.3s;
+}
+
+.links a:hover{
+  color:#7a3e2f;
+}
+
+.error{
+  background: #ffe3e3;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.info{
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+</style>
+</head>
+
 <body>
-<h2>OTP Verification</h2>
 
-<form method="POST">
-<input name="otp" placeholder="Enter OTP" required>
-<button>Verify</button>
-</form>
-
-{% if error %}
-<p style="color:red">{{ error }}</p>
-{% endif %}
+<div class="container">
+  <div class="logo">🔐</div>
+  <h1>OTP Verification</h1>
+  
+  <div class="info">
+    Please enter the OTP sent to your registered email address.
+  </div>
+  
+  <form method="POST">
+    {% if error %}
+    <div class="error">
+      {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="form-group">
+      <label>Enter OTP</label>
+      <input type="text" name="otp" placeholder="000000" maxlength="6" required>
+    </div>
+    
+    <button type="submit" class="btn">Verify OTP</button>
+  </form>
+  
+  <div class="links">
+    <a href="/login">← Back to Login</a>
+  </div>
+</div>
 
 </body>
 </html>

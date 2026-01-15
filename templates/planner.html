@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Meal Planner | Smart Pantry</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background: linear-gradient(135deg, rgba(246, 241, 235, 0.85), rgba(232, 220, 198, 0.85)), 
+              url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat fixed;
+  position: relative;
+}
+.nav{
+  padding:20px 40px;
+  background:rgba(255, 250, 244, 0.95);
+  backdrop-filter: blur(10px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  position: relative;
+  z-index: 100;
+}
+.nav a{
+  margin-left:20px;
+  text-decoration:none;
+  font-weight:600;
+  color:#7a3e2f;
+}
+.page{
+  padding:40px;
+  position: relative;
+  z-index: 10;
+}
+.planner{
+  background:white;
+  padding:30px;
+  border-radius:24px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  margin-bottom:30px;
+}
+.planner-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:15px;
+  margin-bottom:30px;
+}
+.day-card{
+  background:#f8f5f1;
+  padding:20px;
+  border-radius:16px;
+  min-height:200px;
+}
+.day-card h3{
+  margin:0 0 15px 0;
+  color:#7a3e2f;
+  font-size:16px;
+}
+.meal-slot{
+  background:white;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:8px;
+  border:2px dashed #ddd;
+  cursor:pointer;
+  transition:all 0.3s;
+  position: relative;
+}
+.meal-slot:hover{
+  border-color:#986533;
+  background:#fffaf4;
+}
+.meal-slot.filled{
+  border:2px solid #986533;
+  background:#fffaf4;
+}
+.meal-actions{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.delete-meal{
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.delete-meal:hover{
+  background: #c0392b;
+}
+.meal-type{
+  font-size:12px;
+  color:#666;
+  font-weight:600;
+  margin-bottom:5px;
+}
+.meal-name{
+  font-size:14px;
+  color:#333;
+}
+.suggestions{
+  background:white;
+  padding:25px;
+  border-radius:24px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  margin-bottom:30px;
+}
+.suggestion-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.suggestion{
+  background:#f8f5f1;
+  padding:15px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+.suggestion:hover{
+  background:#fffaf4;
+  transform:translateY(-2px);
+}
+.suggestion.high-priority{
+  background:#ffe3e3;
+}
+.suggestion.medium-priority{
+  background:#fff1db;
+}
+.priority-badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+  margin-bottom:8px;
+}
+.high{background:#ff6b6b;color:white}
+.medium{background:#ffa726;color:white}
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+.modal-content{
+  background:white;
+  padding:30px;
+  border-radius:20px;
+  width:400px;
+  max-width:90vw;
+}
+.modal-content h3{
+  margin-top:0;
+  color:#7a3e2f;
+}
+.form-group{
+  margin-bottom:20px;
+}
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+  color:#333;
+}
+.form-group select, .form-group input{
+  width:100%;
+  padding:12px;
+  border:2px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+.btn{
+  padding:12px 24px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  margin-right:10px;
+}
+.btn-primary{
+  background:#986533;
+  color:white;
+}
+.btn-secondary{
+  background:#ddd;
+  color:#333;
+}
+.quick-add{
+  background:#f0f8ff;
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+.quick-add h4{
+  margin:0 0 15px 0;
+  color:#7a3e2f;
+}
+.quick-buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.quick-btn{
+  padding:8px 16px;
+  background:white;
+  border:2px solid #ddd;
+  border-radius:20px;
+  cursor:pointer;
+  font-size:13px;
+  transition:all 0.3s;
+}
+.quick-btn:hover{
+  border-color:#986533;
+  background:#fffaf4;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="nav">
+  <b>🥗 Smart Pantry</b>
+  <div>
+    <a href="/pantry">Pantry</a>
+    <a href="/recipes/all">All Recipes</a>
+    <a href="/recipes/saved">Saved Recipes</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<div class="page">
+
+<h2>📅 Weekly Meal Planner</h2>
+
+<!-- SMART SUGGESTIONS -->
+{% if suggestions %}
+<div class="suggestions">
+  <h3>🚨 Smart Suggestions - Use These Items Soon!</h3>
+  <div class="suggestion-grid">
+    {% for suggestion in suggestions %}
+    <div class="suggestion {{ suggestion.priority }}-priority" onclick="quickAddMeal('{{ suggestion.name }}')">
+      <span class="priority-badge {{ suggestion.priority }}">
+        {% if suggestion.priority == 'high' %}URGENT{% else %}USE SOON{% endif %}
+      </span>
+      <div><strong>{{ suggestion.name }}</strong></div>
+      <div style="font-size:12px;color:#666;">{{ suggestion.days_left }} days left</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- WEEKLY PLANNER -->
+<div class="planner">
+  <div class="planner-grid">
+    {% set days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"] %}
+    {% for day in days %}
+    <div class="day-card">
+      <h3>{{ day }}</h3>
+      
+      <!-- Breakfast -->
+      <div class="meal-slot {% if meal_plans.get(day) and meal_plans[day].get('breakfast') %}filled{% endif %}" 
+           onclick="openMealModal('{{ day }}', 'breakfast')">
+        <div class="meal-type">🌅 Breakfast</div>
+        <div class="meal-name">
+          {{ meal_plans.get(day, {}).get('breakfast', 'Click to add') }}
+        </div>
+        {% if meal_plans.get(day) and meal_plans[day].get('breakfast') %}
+        <div class="meal-actions">
+          <a href="/clear_meal/{{ day }}/breakfast" class="delete-meal" onclick="event.stopPropagation(); return confirm('Remove this meal?')">×</a>
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Lunch -->
+      <div class="meal-slot {% if meal_plans.get(day) and meal_plans[day].get('lunch') %}filled{% endif %}" 
+           onclick="openMealModal('{{ day }}', 'lunch')">
+        <div class="meal-type">🌞 Lunch</div>
+        <div class="meal-name">
+          {{ meal_plans.get(day, {}).get('lunch', 'Click to add') }}
+        </div>
+        {% if meal_plans.get(day) and meal_plans[day].get('lunch') %}
+        <div class="meal-actions">
+          <a href="/clear_meal/{{ day }}/lunch" class="delete-meal" onclick="event.stopPropagation(); return confirm('Remove this meal?')">×</a>
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Dinner -->
+      <div class="meal-slot {% if meal_plans.get(day) and meal_plans[day].get('dinner') %}filled{% endif %}" 
+           onclick="openMealModal('{{ day }}', 'dinner')">
+        <div class="meal-type">🌙 Dinner</div>
+        <div class="meal-name">
+          {{ meal_plans.get(day, {}).get('dinner', 'Click to add') }}
+        </div>
+        {% if meal_plans.get(day) and meal_plans[day].get('dinner') %}
+        <div class="meal-actions">
+          <a href="/clear_meal/{{ day }}/dinner" class="delete-meal" onclick="event.stopPropagation(); return confirm('Remove this meal?')">×</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <div style="font-size:14px;color:#666;text-align:center;">
+    💡 Click on any meal slot to add or edit meals. Prioritize items that expire soon!
+  </div>
+</div>
+
+</div>
+
+<!-- MEAL MODAL -->
+<div class="modal" id="mealModal">
+  <div class="modal-content">
+    <h3>Add/Edit Meal</h3>
+    <form method="POST" action="/planner">
+      <input type="hidden" id="modalDay" name="day">
+      <input type="hidden" id="modalMealType" name="meal_type">
+      
+      <div class="quick-add">
+        <h4>Quick Add from Pantry:</h4>
+        <div class="quick-buttons">
+          {% for item in items %}
+          <div class="quick-btn" onclick="setMealName('{{ item.name }} dish')">{{ item.name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Meal Name:</label>
+        <input type="text" name="meal" id="mealInput" placeholder="Enter meal name" required>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Save Meal</button>
+      <button type="button" class="btn btn-secondary" onclick="closeMealModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openMealModal(day, mealType) {
+  document.getElementById('modalDay').value = day;
+  document.getElementById('modalMealType').value = mealType;
+  document.getElementById('mealInput').value = '';
+  document.getElementById('mealModal').style.display = 'flex';
+  document.getElementById('mealInput').focus();
+}
+
+function closeMealModal() {
+  document.getElementById('mealModal').style.display = 'none';
+}
+
+function setMealName(name) {
+  document.getElementById('mealInput').value = name;
+}
+
+function quickAddMeal(itemName) {
+  // Auto-suggest adding this item to the next available meal slot
+  const mealSuggestions = [itemName + ' curry', itemName + ' stir fry', itemName + ' salad'];
+  const randomMeal = mealSuggestions[Math.floor(Math.random() * mealSuggestions.length)];
+  
+  // Find first empty slot
+  const emptySlots = document.querySelectorAll('.meal-slot:not(.filled)');
+  if (emptySlots.length > 0) {
+    const firstEmpty = emptySlots[0];
+    const dayCard = firstEmpty.closest('.day-card');
+    const day = dayCard.querySelector('h3').textContent;
+    const mealType = firstEmpty.querySelector('.meal-type').textContent.includes('Breakfast') ? 'breakfast' :
+                     firstEmpty.querySelector('.meal-type').textContent.includes('Lunch') ? 'lunch' : 'dinner';
+    
+    document.getElementById('modalDay').value = day;
+    document.getElementById('modalMealType').value = mealType;
+    document.getElementById('mealInput').value = randomMeal;
+    document.getElementById('mealModal').style.display = 'flex';
+  }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('mealModal');
+  if (event.target == modal) {
+    closeMealModal();
+  }
+}
+</script>
+
+</body>
+</html>

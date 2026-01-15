@@ -1,104 +1,98 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+/* Global Styles */
+:root {
+  --primary: #986533;
+  --secondary: #7a3e2f;
+  --background: #f6f1eb;
+  --card: #fffaf4;
+  --text: #3b2f2f;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
 }
 
-/* Background on all pages */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    background: url("/static/bg.png") no-repeat center center fixed;
-    background-size: cover;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
 }
 
-/* Dark overlay */
-.overlay {
-    min-height: 100vh;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
+/* Navigation */
+.navbar {
+  background: var(--card);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Card */
-.card {
-    background: rgba(86, 21, 18, 0.944);
-    width: 340px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    text-align: center;
-    margin-bottom: 20px;
+.navbar h2 {
+  color: var(--secondary);
 }
 
-/* Inputs */
-input {
-    width: 90%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: none;
+.navbar a {
+  color: var(--secondary);
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.navbar a:hover {
+  color: var(--primary);
 }
 
 /* Buttons */
-button {
-    width: 95%;
-    padding: 12px;
-    margin-top: 15px;
-    background: linear-gradient(to right, #18771c, #0e7a14);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
 }
 
-button:hover {
-    opacity: 0.9;
+.btn-primary {
+  background: var(--primary);
+  color: white;
 }
 
-/* Password eye */
-.password-box {
-    position: relative;
+.btn-primary:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
 }
 
-.password-box span {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    cursor: pointer;
+/* Cards */
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
 }
 
-/* Pantry items */
-.pantry-item {
-    background: white;
-    color: black;
-    width: 90%;
-    max-width: 600px;
-    padding: 15px;
-    margin: 10px auto;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.card:hover {
+  transform: translateY(-5px);
 }
 
-.pantry-item img {
-    width: 70px;
-    height: 70px;
-    border-radius: 8px;
-    object-fit: cover;
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .navbar a {
+    margin: 0 0.5rem;
+  }
 }
-
-/* Mobile support */
-@media (max-width: 600px) {
-    .card {
-        width: 90%;
-    }
-    .pantry-item {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
