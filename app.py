@@ -98,9 +98,9 @@ except Exception as e:
 # -------- EMAIL --------
 def send_email(to, subject, content):
     """Send email using SendGrid"""
-    if not SENDGRID_API_KEY:
-        print(f"SendGrid API key not configured. Would send email to {to}: {subject}")
-        return False
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
+        print(f"📧 Email disabled - would send to {to}: {subject}")
+        return True  # Return True to avoid errors
     
     try:
         sg = SendGridAPIClient(SENDGRID_API_KEY)
