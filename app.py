@@ -37,15 +37,73 @@ try:
 except Exception as e:
     print(f"❌ MongoDB connection failed: {e}")
     print("⚠️ Running in demo mode - data will not persist")
-    # Create mock database objects for demo
+    # Create enhanced mock database objects for demo
     class MockCollection:
         def __init__(self):
-            self.data = []
-        def find_one(self, query): return None
-        def find(self, query): return []
-        def insert_one(self, doc): return type('obj', (object,), {'inserted_id': 'demo_id'})
-        def update_one(self, query, update, **kwargs): return None
-        def delete_one(self, query): return None
+            self.data = {}
+            self.counter = 1
+        
+        def find_one(self, query):
+            if not query:
+                return None
+            # Simple demo user for login
+            if "username" in query and query["username"] == "demo":
+                return {"username": "demo", "email": "demo@example.com", "password": "demo"}
+            return None
+        
+        def find(self, query):
+            # Return demo data for pantry items
+            if "user" in query and query["user"] == "demo":
+                from datetime import datetime, timedelta
+                demo_items = [
+                    {
+                        "_id": "demo1",
+                        "user": "demo",
+                        "name": "Tomatoes",
+                        "category": "vegetables",
+                        "quantity": 5,
+                        "unit": "pieces",
+                        "expiry": (datetime.now() + timedelta(days=2)).strftime("%Y-%m-%d"),
+                        "image": "https://images.unsplash.com/photo-1546470427-e5ac89c8ba3a?w=400&h=300&fit=crop",
+                        "added_at": datetime.now()
+                    },
+                    {
+                        "_id": "demo2",
+                        "user": "demo",
+                        "name": "Milk",
+                        "category": "dairy",
+                        "quantity": 1,
+                        "unit": "liters",
+                        "expiry": (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d"),
+                        "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop",
+                        "added_at": datetime.now()
+                    },
+                    {
+                        "_id": "demo3",
+                        "user": "demo",
+                        "name": "Bread",
+                        "category": "grains",
+                        "quantity": 1,
+                        "unit": "packets",
+                        "expiry": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
+                        "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop",
+                        "added_at": datetime.now()
+                    }
+                ]
+                return demo_items
+            return []
+        
+        def insert_one(self, doc):
+            doc_id = f"demo_{self.counter}"
+            self.counter += 1
+            self.data[doc_id] = doc
+            return type('obj', (object,), {'inserted_id': doc_id})
+        
+        def update_one(self, query, update, **kwargs):
+            return None
+        
+        def delete_one(self, query):
+            return None
     
     class MockDB:
         def __init__(self):
@@ -530,50 +588,86 @@ def index():
 @app.route("/signup", methods=["GET","POST"])
 def signup():
     if request.method == "POST":
-        username = request.form["username"]
-        email = request.form["email"]
-        password = request.form["password"]
-        
-        # Check if user already exists
-        if users.find_one({"username": username}):
-            return render_template("signup.html", error="Username already exists")
-        
-        if users.find_one({"email": email}):
-            return render_template("signup.html", error="Email already registered")
-        
-        # Create new user
-        users.insert_one({
-            "username": username,
-            "email": email,
-            "password": generate_password_hash(password),
-            "created_at": datetime.now()
-        })
-        
-        # Send welcome email immediately in a separate thread
-        def send_welcome_async():
-            try:
-                send_welcome_email(email, username)
-                print(f"Welcome email sent successfully to {email}")
-            except Exception as e:
-                print(f"Failed to send welcome email to {email}: {e}")
-        
-        # Start email sending in background
-        email_thread = threading.Thread(target=send_welcome_async)
-        email_thread.daemon = True
-        email_thread.start()
-        
-        return render_template("signup.html", success="Account created successfully! Welcome email has been sent. You can now login.")
+        try:
+            username = request.form.get("username")
+            email = request.form.get("email")
+            password = request.form.get("password")
+            
+            if not username or not email or not password:
+                return render_template("signup.html", error="Please fill in all fields")
+            
+            # In demo mode, just create session
+            if not DB_CONNECTED:
+                session["user"] = username
+                return render_template("signup.html", success="Account created successfully! You can now login.")
+            
+            # Check if user already exists
+            if users.find_one({"username": username}):
+                return render_template("signup.html", error="Username already exists")
+            
+            if users.find_one({"email": email}):
+                return render_template("signup.html", error="Email already registered")
+            
+            # Create new user
+            users.insert_one({
+                "username": username,
+                "email": email,
+                "password": generate_password_hash(password),
+                "created_at": datetime.now()
+            })
+            
+            # Send welcome email immediately in a separate thread
+            def send_welcome_async():
+                try:
+                    send_welcome_email(email, username)
+                    print(f"Welcome email sent successfully to {email}")
+                except Exception as e:
+                    print(f"Failed to send welcome email to {email}: {e}")
+            
+            # Start email sending in background
+            email_thread = threading.Thread(target=send_welcome_async)
+            email_thread.daemon = True
+            email_thread.start()
+            
+            return render_template("signup.html", success="Account created successfully! Welcome email has been sent. You can now login.")
+            
+        except Exception as e:
+            print(f"Signup error: {e}")
+            return render_template("signup.html", error="Signup failed. Please try again.")
     
     return render_template("signup.html")
 
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
-        user = users.find_one({"username": request.form["username"]})
-        if not user or not check_password_hash(user["password"], request.form["password"]):
-            return render_template("login.html", error="Invalid")
-        session["user"] = user["username"]
-        return redirect("/pantry")
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
+            
+            if not username or not password:
+                return render_template("login.html", error="Please enter both username and password")
+            
+            # In demo mode, allow specific demo login or any login
+            if not DB_CONNECTED:
+                # Allow demo user or any user for demo purposes
+                if username == "demo" or len(username) > 0:
+                    session["user"] = username
+                    return redirect("/pantry")
+                else:
+                    return render_template("login.html", error="Please enter a username")
+            
+            # Real database login
+            user = users.find_one({"username": username})
+            if not user or not check_password_hash(user["password"], password):
+                return render_template("login.html", error="Invalid username or password")
+            
+            session["user"] = user["username"]
+            return redirect("/pantry")
+            
+        except Exception as e:
+            print(f"Login error: {e}")
+            return render_template("login.html", error="Login failed. Please try again.")
+    
     return render_template("login.html")
 
 @app.route("/pantry")

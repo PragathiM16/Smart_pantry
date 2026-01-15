@@ -1,0 +1,24 @@
+# Smart Pantry Environment Variables for Render
+# Copy these to Render dashboard when deploying
+
+# 1. SECRET KEY (Already generated - use as is)
+SECRET_KEY=ndvnfYBaGnMPz4S4&Jk3*lluKe%383mKCCcosszG5JOxdzQNSs
+
+# 2. FLASK ENVIRONMENT
+FLASK_ENV=production
+
+# 3. MONGODB CONNECTION (Replace with your actual connection string)
+# Format: mongodb+srv://smartpantry_admin:O2DUKYtYX6nFmQN6@smart-pantry-cluster.XXXXX.mongodb.net/smart_pantry?retryWrites=true&w=majority
+MONGO_URI=REPLACE_WITH_YOUR_MONGODB_ATLAS_CONNECTION_STRING
+
+# 4. EMAIL SETTINGS (Replace with your SendGrid details)
+SENDER_EMAIL=REPLACE_WITH_YOUR_EMAIL@gmail.com
+SENDGRID_API_KEY=REPLACE_WITH_YOUR_SENDGRID_API_KEY
+
+# 5. IMAGE API (Optional - you can use the default)
+PIXABAY_API_KEY=53925676-923ada41045b5b093107c781b
+
+# INSTRUCTIONS:
+# 1. Set up MongoDB Atlas and replace MONGO_URI
+# 2. Set up SendGrid and replace SENDER_EMAIL and SENDGRID_API_KEY
+# 3. Copy all these to Render environment variables

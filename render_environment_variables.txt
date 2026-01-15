@@ -1,0 +1,26 @@
+RENDER ENVIRONMENT VARIABLES TO ADD:
+
+1. MONGO_URI
+   Value: mongodb+srv://username:password@cluster.mongodb.net/smart_pantry?retryWrites=true&w=majority
+   (Replace with your actual MongoDB Atlas connection string)
+
+2. SECRET_KEY
+   Value: SmartPantrySecretKey2024RandomString
+   (Use a long random string)
+
+3. FLASK_ENV
+   Value: production
+
+4. SENDER_EMAIL
+   Value: smartpantry28@gmail.com
+   (Or your verified email)
+
+5. SENDGRID_API_KEY
+   Value: SG.your_sendgrid_api_key_here
+   (Optional - for email functionality)
+
+6. PIXABAY_API_KEY
+   Value: 53925676-923ada41045b5b093107c781b
+   (Optional - for food images)
+
+MOST IMPORTANT: Set up MONGO_URI with your MongoDB Atlas connection string!
