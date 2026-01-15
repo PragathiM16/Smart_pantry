@@ -61,53 +61,9 @@ except Exception as e:
             self.counter = 1
         
         def find_one(self, query):
-            if not query:
-                return None
-            # Simple demo user for login
-            if "username" in query and query["username"] == "demo":
-                return {"username": "demo", "email": "demo@example.com", "password": "demo"}
             return None
         
         def find(self, query):
-            # Return demo data for pantry items
-            if "user" in query and query["user"] == "demo":
-                from datetime import datetime, timedelta
-                demo_items = [
-                    {
-                        "_id": "demo1",
-                        "user": "demo",
-                        "name": "Tomatoes",
-                        "category": "vegetables",
-                        "quantity": 5,
-                        "unit": "pieces",
-                        "expiry": (datetime.now() + timedelta(days=2)).strftime("%Y-%m-%d"),
-                        "image": "https://images.unsplash.com/photo-1546470427-e5ac89c8ba3a?w=400&h=300&fit=crop",
-                        "added_at": datetime.now()
-                    },
-                    {
-                        "_id": "demo2",
-                        "user": "demo",
-                        "name": "Milk",
-                        "category": "dairy",
-                        "quantity": 1,
-                        "unit": "liters",
-                        "expiry": (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d"),
-                        "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop",
-                        "added_at": datetime.now()
-                    },
-                    {
-                        "_id": "demo3",
-                        "user": "demo",
-                        "name": "Bread",
-                        "category": "grains",
-                        "quantity": 1,
-                        "unit": "packets",
-                        "expiry": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
-                        "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop",
-                        "added_at": datetime.now()
-                    }
-                ]
-                return demo_items
             return []
         
         def insert_one(self, doc):
@@ -121,6 +77,9 @@ except Exception as e:
         
         def delete_one(self, query):
             return None
+        
+        def count_documents(self, query):
+            return 0
     
     class MockDB:
         def __init__(self):
@@ -711,14 +670,9 @@ def login():
             if not username or not password:
                 return render_template("login.html", error="Please enter both username and password")
             
-            # In demo mode, allow specific demo login or any login
+            # In demo mode, show error message directing to database setup
             if not DB_CONNECTED:
-                # Allow demo user or any user for demo purposes
-                if username == "demo" or len(username) > 0:
-                    session["user"] = username
-                    return redirect("/pantry")
-                else:
-                    return render_template("login.html", error="Please enter a username")
+                return render_template("login.html", error="Database not connected. Please set up MongoDB Atlas connection string in Render environment variables.")
             
             # Real database login
             user = users.find_one({"username": username})
