@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Pantry - Dashboard</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, rgba(152, 101, 51, 0.75), rgba(122, 62, 47, 0.75)), 
+              url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Navigation */
+.navbar {
+  background: rgba(255, 250, 244, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(152, 101, 51, 0.1);
+}
+
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #7a3e2f;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: #7a3e2f;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-links a:hover {
+  background: rgba(152, 101, 51, 0.1);
+  color: #986533;
+  transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero {
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23986533" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+  z-index: 1;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #7a3e2f, #986533);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  letter-spacing: -2px;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.hero-cta {
+  display: inline-block;
+  padding: 1.2rem 3rem;
+  background: linear-gradient(135deg, #986533, #7a3e2f);
+  color: white;
+  text-decoration: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 12px 30px rgba(152, 101, 51, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.hero-cta:hover::before {
+  left: 100%;
+}
+
+.hero-cta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(152, 101, 51, 0.4);
+}
+
+/* Features Section */
+.features-section {
+  padding: 5rem 2rem;
+  background: rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.features-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #7a3e2f;
+  margin-bottom: 1rem;
+}
+
+.section-title p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3rem 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(152, 101, 51, 0.1);
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #986533, #7a3e2f);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.feature-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 1);
+}
+
+.feature-icon {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  display: inline-block;
+  transition: all 0.4s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #7a3e2f;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card p {
+  color: #666;
+  line-height: 1.7;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #986533;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.feature-link:hover {
+  color: #7a3e2f;
+  transform: translateX(5px);
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(152, 101, 51, 0.1), rgba(122, 62, 47, 0.1));
+}
+
+.stats-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.stat-item {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #986533;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 5rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #7a3e2f;
+  margin-bottom: 1.5rem;
+}
+
+.cta-section p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #986533, #7a3e2f);
+  color: white;
+  box-shadow: 0 8px 25px rgba(152, 101, 51, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(152, 101, 51, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(241, 231, 220, 0.8);
+  color: #7a3e2f;
+  border: 2px solid #986533;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: #986533;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(152, 101, 51, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero p {
+    font-size: 1.1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .feature-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 3rem 1rem;
+  }
+  
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .features-section,
+  .stats-section,
+  .cta-section {
+    padding: 3rem 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="nav-content">
+    <div class="nav-brand">
+      <span>🥗</span>
+      <span>Smart Pantry</span>
+    </div>
+    <div class="nav-links">
+      <a href="/login">Login</a>
+      <a href="/signup">Sign Up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Smart Food Management</h1>
+    <p>Transform your kitchen into an intelligent ecosystem. Track inventory, discover recipes, and reduce waste with AI-powered insights and personalized recommendations.</p>
+    <a href="/signup" class="hero-cta">Start Your Journey</a>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="features-container">
+    <div class="section-title">
+      <h2>Powerful Features</h2>
+      <p>Everything you need to manage your pantry efficiently and reduce food waste</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Smart Analytics</h3>
+        <p>Get intelligent insights about your food consumption patterns, expiry predictions, and waste reduction opportunities with advanced analytics.</p>
+        <a href="#" class="feature-link">Learn More →</a>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🍳</div>
+        <h3>Recipe Discovery</h3>
+        <p>Discover personalized recipes based on ingredients you already have. Our AI suggests creative meals to help you use up items before they expire.</p>
+        <a href="#" class="feature-link">Explore Recipes →</a>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Meal Planning</h3>
+        <p>Plan your weekly meals efficiently with smart suggestions. Optimize your grocery shopping and ensure you use ingredients before they spoil.</p>
+        <a href="#" class="feature-link">Start Planning →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="stats-container">
+    <h2 style="color: #7a3e2f; font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Making a Difference</h2>
+    <p style="color: #666; font-size: 1.1rem; margin-bottom: 2rem;">Join thousands of users reducing food waste and saving money</p>
+    
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number">50K+</span>
+        <span class="stat-label">Active Users</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">2M+</span>
+        <span class="stat-label">Meals Planned</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">30%</span>
+        <span class="stat-label">Waste Reduced</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">$500</span>
+        <span class="stat-label">Avg. Saved/Year</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Ready to Transform Your Kitchen?</h2>
+    <p>Join thousands of users who are already saving money and reducing food waste with Smart Pantry</p>
+    <div class="cta-buttons">
+      <a href="/signup" class="btn btn-primary">Get Started Free</a>
+      <a href="/login" class="btn btn-secondary">Sign In</a>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

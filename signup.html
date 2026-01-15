@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - Smart Pantry</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background: linear-gradient(135deg, rgba(152, 101, 51, 0.8), rgba(122, 62, 47, 0.8)), 
+              url('https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat fixed;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position: relative;
+}
+.container{
+  background:white;
+  padding:50px 40px;
+  border-radius:24px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
+  width:100%;
+  max-width:400px;
+  position: relative;
+  z-index: 10;
+}
+.logo{
+  text-align:center;
+  font-size:60px;
+  margin-bottom:20px;
+}
+h1{
+  text-align:center;
+  color:#7a3e2f;
+  margin-bottom:30px;
+}
+.form-group{
+  margin-bottom:20px;
+}
+label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+  color:#333;
+}
+input{
+  width:100%;
+  padding:14px;
+  border:2px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  box-sizing:border-box;
+}
+input:focus{
+  outline:none;
+  border-color:#986533;
+}
+.btn{
+  width:100%;
+  padding:16px;
+  background:#986533;
+  color:white;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:20px;
+}
+.btn:hover{
+  background:#7a3e2f;
+}
+.links{
+  text-align:center;
+  margin-top:30px;
+}
+.links a{
+  color:#986533;
+  text-decoration:none;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="logo">🥗</div>
+  <h1>Join Smart Pantry</h1>
+  
+  <form method="POST">
+    {% if error %}
+    <div style="background: #ffe3e3; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+      {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if success %}
+    <div style="background: #e7f6ec; color: #2d5a2d; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+      {{ success }}
+    </div>
+    {% endif %}
+    
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" required>
+    </div>
+    
+    <button type="submit" class="btn">Create Account</button>
+  </form>
+  
+  <div class="links">
+    <a href="/login">Already have an account? Sign in</a><br><br>
+    <a href="/">← Back to Home</a>
+  </div>
+</div>
+
+</body>
+</html>
