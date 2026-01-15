@@ -91,6 +91,12 @@ input:focus{
   <div class="logo">🥗</div>
   <h1>Join Smart Pantry</h1>
   
+  {% if not db_connected %}
+  <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 14px;">
+    ⚠️ Demo Mode: Database not connected
+  </div>
+  {% endif %}
+  
   <form method="POST">
     {% if error %}
     <div style="background: #ffe3e3; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center;">

@@ -1,0 +1,24 @@
+COPY-PASTE ENVIRONMENT VARIABLES FOR RENDER
+==========================================
+
+Copy each line below and paste as Key-Value pairs in Render:
+
+Key: MONGO_URI
+Value: mongodb+srv://smartpantry_admin:SmartPantry2024!@smart-pantry-cluster.xxxxx.mongodb.net/smart_pantry?retryWrites=true&w=majority
+
+Key: SECRET_KEY
+Value: SmartPantrySecretKey2024RandomStringForSecurity
+
+Key: FLASK_ENV
+Value: production
+
+Key: SENDER_EMAIL
+Value: smartpantry28@gmail.com
+
+Key: SENDGRID_API_KEY
+Value: SG.your_sendgrid_api_key_here
+
+Key: PIXABAY_API_KEY
+Value: 53925676-923ada41045b5b093107c781b
+
+IMPORTANT: Replace "smart-pantry-cluster.xxxxx" in MONGO_URI with your actual MongoDB Atlas cluster address!

@@ -541,6 +541,50 @@ def get_food_image(name):
     return f"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop&crop=center"
 
 # -------- ROUTES --------
+@app.route("/debug/clear-database")
+def clear_database():
+    """Debug endpoint to completely clear all collections"""
+    if not DB_CONNECTED:
+        return "Database not connected"
+    
+    try:
+        # Clear all collections
+        users.delete_many({})
+        items.delete_many({})
+        db.saved_recipes.delete_many({})
+        db.hidden_recipes.delete_many({})
+        db.meal_plans.delete_many({})
+        
+        # Count remaining documents
+        user_count = users.count_documents({})
+        item_count = items.count_documents({})
+        
+        return f"""
+        <html>
+        <head><title>Database Cleared</title></head>
+        <body style="font-family: monospace; padding: 20px;">
+            <h2>🗑️ Database Cleared Successfully!</h2>
+            <p>✅ Users collection: {user_count} documents remaining</p>
+            <p>✅ Items collection: {item_count} documents remaining</p>
+            <p>✅ Saved recipes cleared</p>
+            <p>✅ Hidden recipes cleared</p>
+            <p>✅ Meal plans cleared</p>
+            
+            <h3>Next Steps:</h3>
+            <ol>
+                <li><a href="/signup">Create a new account</a></li>
+                <li><a href="/login">Login with new account</a></li>
+                <li><a href="/pantry">Start using the app</a></li>
+            </ol>
+            
+            <p><strong>Note:</strong> This endpoint will be removed in production.</p>
+        </body>
+        </html>
+        """
+        
+    except Exception as e:
+        return f"Error clearing database: {e}"
+
 @app.route("/debug/connection")
 def debug_connection():
     """Debug endpoint to check MongoDB connection status"""
@@ -612,32 +656,37 @@ def index():
 def signup():
     if request.method == "POST":
         try:
-            username = request.form.get("username")
-            email = request.form.get("email")
-            password = request.form.get("password")
+            username = request.form.get("username", "").strip()
+            email = request.form.get("email", "").strip()
+            password = request.form.get("password", "")
             
             if not username or not email or not password:
-                return render_template("signup.html", error="Please fill in all fields")
+                return render_template("signup.html", error="Please fill in all fields", db_connected=DB_CONNECTED)
             
             # In demo mode, just create session
             if not DB_CONNECTED:
                 session["user"] = username
-                return render_template("signup.html", success="Account created successfully! You can now login.")
+                return render_template("signup.html", success="Account created successfully! You can now login.", db_connected=DB_CONNECTED)
             
-            # Check if user already exists
-            if users.find_one({"username": username}):
-                return render_template("signup.html", error="Username already exists")
+            # Check if user already exists (more detailed checking)
+            existing_user = users.find_one({"username": username})
+            if existing_user:
+                return render_template("signup.html", error=f"Username '{username}' already exists. Try a different username.", db_connected=DB_CONNECTED)
             
-            if users.find_one({"email": email}):
-                return render_template("signup.html", error="Email already registered")
+            existing_email = users.find_one({"email": email})
+            if existing_email:
+                return render_template("signup.html", error=f"Email '{email}' is already registered. Try a different email.", db_connected=DB_CONNECTED)
             
             # Create new user
-            users.insert_one({
+            user_doc = {
                 "username": username,
                 "email": email,
                 "password": generate_password_hash(password),
                 "created_at": datetime.now()
-            })
+            }
+            
+            result = users.insert_one(user_doc)
+            print(f"✅ Created user: {username} with ID: {result.inserted_id}")
             
             # Send welcome email immediately in a separate thread
             def send_welcome_async():
@@ -652,13 +701,13 @@ def signup():
             email_thread.daemon = True
             email_thread.start()
             
-            return render_template("signup.html", success="Account created successfully! Welcome email has been sent. You can now login.")
+            return render_template("signup.html", success=f"Account created successfully for '{username}'! Welcome email has been sent. You can now login.", db_connected=DB_CONNECTED)
             
         except Exception as e:
             print(f"Signup error: {e}")
-            return render_template("signup.html", error="Signup failed. Please try again.")
+            return render_template("signup.html", error=f"Signup failed: {str(e)}. Please try again.", db_connected=DB_CONNECTED)
     
-    return render_template("signup.html")
+    return render_template("signup.html", db_connected=DB_CONNECTED)
 
 @app.route("/login", methods=["GET","POST"])
 def login():
