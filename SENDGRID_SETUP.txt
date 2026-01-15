@@ -1,0 +1,25 @@
+SENDGRID SETUP FOR EMAIL NOTIFICATIONS
+=====================================
+
+1. Go to Render Dashboard: https://dashboard.render.com
+2. Click your smart-pantry service
+3. Click "Environment" tab
+4. Add these environment variables:
+
+Key: SENDGRID_API_KEY
+Value: SG.your_actual_sendgrid_api_key_here
+
+Key: SENDER_EMAIL  
+Value: pragathim1606@gmail.com
+
+IMPORTANT: Replace "SG.your_actual_sendgrid_api_key_here" with your real SendGrid API key!
+
+After adding these:
+1. Click "Save Changes"
+2. Wait for redeploy (5 minutes)
+3. Test expiry emails will work
+
+SendGrid Free Plan:
+- 100 emails per day
+- Perfect for expiry notifications
+- No credit card required

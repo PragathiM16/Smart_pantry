@@ -119,10 +119,6 @@ def send_email(to, subject, content):
 
 def send_welcome_email(email, username):
     """Send welcome email to new users"""
-    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
-        print(f"📧 Email notifications disabled - Welcome email skipped for {username}")
-        return True
-    
     subject = "Welcome to Smart Pantry! 🥗"
     content = f"""
     <html>
@@ -161,10 +157,6 @@ def send_expiry_notification(email, username, expiring_items):
     """Send expiry notification email"""
     if not expiring_items:
         return
-    
-    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
-        print(f"📧 Email notifications disabled - Expiry notification skipped for {username}")
-        return True
     
     subject = f"⚠️ {len(expiring_items)} items expiring soon in your pantry"
     
@@ -259,8 +251,8 @@ def check_expiring_items():
         
         # Send notification if there are expiring items
         if expiring_items:
-            print(f"📧 Email notifications disabled - Expiry notification skipped for {username} ({len(expiring_items)} items)")
-            # send_expiry_notification(email, username, expiring_items)  # Commented out to prevent errors
+            print(f"Sending expiry notification to {email} for {len(expiring_items)} items")
+            send_expiry_notification(email, username, expiring_items)
 
 def start_scheduler():
     """Start the background scheduler for daily email notifications"""
@@ -531,6 +523,44 @@ def get_food_image(name):
     return f"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop&crop=center"
 
 # -------- ROUTES --------
+@app.route("/debug/email-config")
+def debug_email_config():
+    """Debug endpoint to check email configuration"""
+    sendgrid_key_set = "SENDGRID_API_KEY" in os.environ
+    sendgrid_key_preview = SENDGRID_API_KEY[:10] + "..." if SENDGRID_API_KEY and len(SENDGRID_API_KEY) > 10 else SENDGRID_API_KEY
+    sender_email_set = "SENDER_EMAIL" in os.environ
+    
+    config_info = {
+        "sendgrid_api_key_set": sendgrid_key_set,
+        "sendgrid_key_preview": sendgrid_key_preview,
+        "sender_email_set": sender_email_set,
+        "sender_email": SENDER_EMAIL,
+        "email_enabled": sendgrid_key_set and SENDGRID_API_KEY != "SG.your_sendgrid_api_key_here"
+    }
+    
+    return f"""
+    <html>
+    <head><title>Email Configuration Debug</title></head>
+    <body style="font-family: monospace; padding: 20px;">
+        <h2>📧 Email Configuration Debug</h2>
+        <pre>{chr(10).join([f"{k}: {v}" for k, v in config_info.items()])}</pre>
+        
+        <h3>📋 Status:</h3>
+        {"✅ Email configuration looks good!" if config_info["email_enabled"] else "❌ Email configuration incomplete"}
+        
+        <h3>🔧 If emails aren't working:</h3>
+        <ol>
+            <li>Check environment variables in Render dashboard</li>
+            <li>Force manual redeploy in Render</li>
+            <li>Verify SendGrid API key is correct</li>
+            <li>Check sender email is verified in SendGrid</li>
+        </ol>
+        
+        <p><a href="/pantry">← Back to Pantry</a></p>
+    </body>
+    </html>
+    """
+
 @app.route("/debug/clear-database")
 def clear_database():
     """Debug endpoint to completely clear all collections"""
@@ -681,11 +711,10 @@ def signup():
             # Send welcome email immediately in a separate thread
             def send_welcome_async():
                 try:
-                    result = send_welcome_email(email, username)
-                    if result:
-                        print(f"📧 Welcome email process completed for {email}")
+                    send_welcome_email(email, username)
+                    print(f"Welcome email sent successfully to {email}")
                 except Exception as e:
-                    print(f"📧 Welcome email process failed for {email}: {e}")
+                    print(f"Failed to send welcome email to {email}: {e}")
             
             # Start email sending in background
             email_thread = threading.Thread(target=send_welcome_async)
@@ -1093,10 +1122,20 @@ def test_expiry_email():
         return redirect("/login")
     
     if not SENDGRID_API_KEY or SENDGRID_API_KEY == "SG.your_sendgrid_api_key_here":
-        return "📧 Email notifications are disabled. To enable emails, set up SendGrid API key in environment variables."
+        return """
+        <h2>📧 Email Setup Required</h2>
+        <p>To enable expiry email notifications:</p>
+        <ol>
+            <li>Sign up at <a href="https://sendgrid.com" target="_blank">SendGrid.com</a></li>
+            <li>Create an API key</li>
+            <li>Add SENDGRID_API_KEY to Render environment variables</li>
+            <li>Add SENDER_EMAIL to Render environment variables</li>
+        </ol>
+        <p><a href="/pantry">← Back to Pantry</a></p>
+        """
     
     check_expiring_items()
-    return "Expiry email check triggered! Check your email if you have items expiring in 3 days or less."
+    return "✅ Expiry email check triggered! Check your email if you have items expiring in 3 days or less."
 
 @app.route("/logout")
 def logout():
